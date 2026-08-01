@@ -1,513 +1,187 @@
-# TechFinger Installation & Usage Guide for Kali Linux
+```markdown
+TechFinger Installation Guide — Kali Linux
+==========================================
 
-Complete guide to install, configure, and run TechFinger on Kali Linux.
+Prerequisites
+-------------
 
----
+- Kali Linux 2024+ (or any Debian-based distribution)
+- Python 3.11+
+- Git
+- pip
 
-## 📋 Prerequisites
+Check versions:
 
-- **Kali Linux 2024+** (or any Debian-based Linux)
-- **Python 3.11+** (check: `python3 --version`)
-- **Git** (for cloning: `sudo apt install git`)
-- **pip** (usually comes with Python, check: `pip3 --version`)
+    python3 --version
+    pip3 --version
 
----
+Installation
+------------
 
-## 🚀 Installation Methods
+### From Source
 
-### Method 1: Clone from GitHub (Recommended)
+    git clone https://github.com/belsopky/TechFinger.git
+    cd TechFinger
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/HaQtor/TechFinger.git
-cd TechFinger
+### System-Wide (Optional)
 
-# 2. (Optional but recommended) Create a virtual environment
-python3 -m venv venv
-source venv/bin/activate
+    sudo ln -s $(pwd)/techfinger.py /usr/local/bin/techfinger
+    chmod +x techfinger.py
 
-# 3. Install dependencies
-pip install -r requirements.txt
+Verification
+------------
 
-# 4. Test installation
-python3 techfinger.py --help
-```
+    python3 -c "import requests, bs4, rich; print('Dependencies OK')"
+    python3 techfinger.py --help
+    python3 techfinger.py -u https://example.com --profile fast
 
-**Expected output:**
-```
-usage: techfinger [-h] -u URL [--profile {fast,balanced,deep}] ...
-TechFinger — Explainable heuristic technology fingerprinting.
-```
+Usage
+-----
 
----
+### Scan Profiles
 
-### Method 2: System-Wide Installation
+| Profile | Timeout | Deep JS | Max JS Files | Purpose |
+|---------|---------|---------|--------------|---------|
+| fast | 5s | No | 0 | Quick reconnaissance |
+| balanced | 10s | Yes | 3 | Default pentesting |
+| deep | 30s | Yes | 10 | Thorough assessment |
 
-If you want to run `techfinger` from anywhere on your Kali system:
+Override parameters:
 
-```bash
-# 1. Clone the repo
-git clone https://github.com/HaQtor/TechFinger.git
-cd TechFinger
+    python3 techfinger.py -u https://target.com --profile balanced --timeout 15 --max-js 5
 
-# 2. Install dependencies globally
-pip install -r requirements.txt
+### Common Commands
 
-# 3. Create symlink to /usr/local/bin
-sudo ln -s $(pwd)/techfinger.py /usr/local/bin/techfinger
+Default scan:
 
-# 4. Make executable
-chmod +x techfinger.py
+    python3 techfinger.py -u https://target.com
 
-# 5. Test from anywhere
-techfinger -u https://example.com --profile fast
-```
+Fast scan:
 
-Now you can run `techfinger` directly without `python3 techfinger.py`.
+    python3 techfinger.py -u https://target.com --profile fast
 
----
+Deep scan with full output:
 
-### Method 3: Install in Kali's Python Environment
+    python3 techfinger.py -u https://target.com \
+      --profile deep \
+      --explain \
+      --report \
+      --evidence
 
-For persistent installation across system updates:
+JSON output:
 
-```bash
-# 1. Install dependencies system-wide
-sudo pip install -r requirements.txt
+    python3 techfinger.py -u https://target.com -o json > scan.json
 
-# 2. Copy files
-sudo cp techfinger.py /usr/local/bin/
-sudo cp patterns.py /usr/local/lib/python3/dist-packages/
+Parse with jq:
 
-# 3. Ensure executable
-sudo chmod +x /usr/local/bin/techfinger.py
-```
+    cat scan.json | jq '.technologies[] | select(.confidence >= 70)'
 
----
+Proxy Support
+-------------
 
-## ✅ Verification
+TechFinger uses the `requests` library and respects standard proxy environment variables:
 
-After installation, verify everything works:
+    export HTTP_PROXY="http://127.0.0.1:8080"
+    export HTTPS_PROXY="http://127.0.0.1:8080"
+    python3 techfinger.py -u https://target.com
 
-```bash
-# Test 1: Python imports
-python3 -c "import requests, bs4, rich; print('✓ Dependencies OK')"
-
-# Test 2: CLI help
-python3 techfinger.py --help
-
-# Test 3: Quick scan (use example.com or your own target)
-python3 techfinger.py -u https://example.com --profile fast
-
-# Expected: TechFinger banner + scan results
-```
-
----
-
-## 🎯 Common Usage Patterns
-
-### 1. Quick Recon (Fast Profile)
-
-```bash
-python3 techfinger.py -u https://target.com --profile fast
-
-# Time: ~0.3-0.8s
-# Use: Large-scope scans, mass reconnaissance
-```
-
-### 2. Balanced Pentesting (Default)
-
-```bash
-python3 techfinger.py -u https://target.com
-
-# or explicitly:
-python3 techfinger.py -u https://target.com --profile balanced
-
-# Time: ~1.0-2.5s
-# Use: Standard pentest workflow
-# Features: Deep JS analysis (3 files), version extraction
-```
-
-### 3. Deep Assessment (Deep Profile)
-
-```bash
-python3 techfinger.py -u https://target.com --profile deep
-
-# Time: ~3.0-8.0s
-# Use: Thorough assessment, source map hunting
-# Features: Fetch up to 10 external JS files, API endpoint detection
-```
-
-### 4. Full Report with Explanations
-
-```bash
-python3 techfinger.py -u https://target.com \
-  --profile deep \
-  --explain \
-  --report \
-  --evidence
-
-# Outputs:
-# - Terminal: confidence breakdowns for every finding
-# - report.md: professional Markdown report for clients
-# - evidence/: raw data directory (headers, cookies, findings.json, etc.)
-```
-
-### 5. JSON Output for Scripting
-
-```bash
-# Redirect to file
-python3 techfinger.py -u https://target.com -o json > scan.json
-
-# Parse with jq
-cat scan.json | jq '.technologies[] | select(.confidence >= 70)'
-
-# Check for specific technology
-python3 techfinger.py -u https://target.com -o json | \
-  jq '.technologies[] | select(.name == "Laravel")'
-```
-
-### 6. Compare Scans Over Time
-
-```bash
-# First scan (baseline)
-python3 techfinger.py -u https://target.com --profile balanced -o json > baseline.json
-
-# (Wait days/weeks/months)
-
-# Later scan (comparison)
-python3 techfinger.py -u https://target.com --profile balanced --compare baseline.json
-
-# Output: Shows added/removed/updated technologies and new contradictions
-```
-
-### 7. Timeout & Deep Settings Override
-
-```bash
-# Increase timeout, fetch more JS files
-python3 techfinger.py -u https://target.com \
-  --profile balanced \
-  --timeout 20 \
-  --max-js 8 \
-  --max-size 2000000
-
-# Only fetch same-origin JS
-python3 techfinger.py -u https://target.com \
-  --profile deep \
-  --same-origin-only
-```
-
----
-
-## 🔧 Troubleshooting
+Troubleshooting
+---------------
 
 ### ImportError: No module named 'requests'
 
-```bash
-# Solution 1: Install via pip
-pip install requests beautifulsoup4 rich
+    pip install requests beautifulsoup4 rich
 
-# Solution 2: Use --break-system-packages (Kali-specific)
-pip install --break-system-packages requests beautifulsoup4 rich
+Or on Kali with system Python:
 
-# Solution 3: Upgrade pip first
-python3 -m pip install --upgrade pip
-pip install requests beautifulsoup4 rich
-```
+    pip install --break-system-packages requests beautifulsoup4 rich
 
-### SSL Certificate Verification Error
+### SSL Certificate Verification Failed
 
-```bash
-# If you get: "SSL: CERTIFICATE_VERIFY_FAILED"
-# This is normal in lab/testing environments
+    sudo update-ca-certificates --fresh
 
-# Solution 1 (Recommended): Update CA certificates
-sudo update-ca-certificates --fresh
-
-# Solution 2: Use a testing proxy (Burp Suite, ZAP)
-# Just run TechFinger normally, it will work through the proxy
-```
+Or ensure your target's certificate is valid. TechFinger does not bypass certificate verification by default.
 
 ### Connection Timeout
 
-```bash
-# If scans timeout on slow networks:
-python3 techfinger.py -u https://target.com --timeout 30
+    python3 techfinger.py -u https://target.com --timeout 30
 
-# Increase from default 10s to 30s
-```
+### Permission Denied
 
-### Permission Denied Running Script
+    chmod +x techfinger.py
+    ./techfinger.py -u https://target.com
 
-```bash
-# Make it executable
-chmod +x techfinger.py
+Output Files
+------------
 
-# Then run with ./
-./techfinger.py -u https://target.com
-```
+### report.md (generated with --report)
 
-### "Command not found: techfinger"
-
-If you installed system-wide but get this error:
-
-```bash
-# Check if symlink exists
-ls -l /usr/local/bin/techfinger
-
-# If missing, create it
-sudo ln -s $(pwd)/techfinger.py /usr/local/bin/techfinger
-
-# Then verify
-techfinger --help
-```
-
----
-
-## 📂 Output Files
-
-After running TechFinger with flags, you'll get:
-
-### `report.md` (with `--report`)
-
-Professional Markdown report including:
+Contains:
 - Detected technologies table
 - Stack correlation chain
 - Contradictions
 - Security observations
 - Investigation paths
 
-Use in:
-- Client deliverables
-- Pentest reports
-- GitHub wikis
-- Confluence pages
+### evidence/ directory (generated with --evidence)
 
-### `evidence/` directory (with `--evidence`)
+Contains:
+- headers.txt
+- cookies.txt
+- body.html
+- scripts.txt
+- findings.json
+- contradictions.txt
+- observations.txt
 
-Raw scan artifacts:
-- `headers.txt` — HTTP response headers
-- `cookies.txt` — Cookie names
-- `body.html` — HTML response (first 1MB)
-- `scripts.txt` — External + inline script count
-- `findings.json` — Structured detection data
-- `contradictions.txt` — Conflict details
-- `observations.txt` — Security observations
+Automation
+----------
 
-Use for:
-- Evidence preservation
-- Detailed review
-- Compliance documentation
+### Batch Scanning
 
----
+    #!/bin/bash
+    TARGETS=("https://site1.com" "https://site2.com" "https://site3.com")
 
-## 🔄 Automation & CI/CD
+    for target in "${TARGETS[@]}"; do
+        echo "[*] Scanning: $target"
+        python3 techfinger.py -u "$target" --profile fast -o json > "${target//https:\/\//}.json"
+        sleep 2
+    done
 
-### Bash Script for Batch Scanning
+### Parse Results
 
-```bash
-#!/bin/bash
-# batch_scan.sh
+Find high-risk technologies:
 
-TARGETS=("https://site1.com" "https://site2.com" "https://site3.com")
+    cat *.json | jq '.technologies[] | select(.risk == "High") | .name'
 
-for target in "${TARGETS[@]}"; do
-    echo "[*] Scanning: $target"
-    python3 techfinger.py -u "$target" --profile fast -o json > "${target//https:\/\//}.json"
-    sleep 2  # Rate limiting
-done
+Count unique technologies:
 
-echo "[✓] Batch scan complete"
-```
+    cat *.json | jq -r '.technologies[].name' | sort | uniq -c
 
-Usage:
-```bash
-chmod +x batch_scan.sh
-./batch_scan.sh
-```
+Security Notes
+--------------
 
-### Parse Results with jq
+- Use only on authorized targets
+- Follow defined scope and rate limits
+- Protect output files: `chmod 600 report.md`
+- Remove evidence when no longer needed: `rm -rf evidence/`
 
-```bash
-# Find all high-risk techs across all scans
-for f in *.json; do
-    echo "=== $f ==="
-    cat "$f" | jq '.technologies[] | select(.risk == "High") | .name'
-done
-```
+Adding Custom Rules
+-------------------
 
-### Generate Summary Report
+Edit `patterns.py`:
 
-```bash
-# Count unique technologies found
-cat *.json | jq -r '.technologies[].name' | sort | uniq -c
+1. Add regex to `HEADER_PATTERNS`, `HTML_PATTERNS`, `JS_GLOBALS`, or `ERROR_PATTERNS`
+2. Add risk level to `RISK_LEVELS`
+3. Add investigation paths to `INVESTIGATION_PATHS`
+4. Test with `python3 techfinger.py -u <target> --explain`
 
-# Find most common framework
-cat *.json | jq -r '.technologies[] | select(.category == "Framework") | .name' | sort | uniq -c | sort -rn | head -5
-```
+See CONTRIBUTING.md for detailed guidelines.
 
 ---
-
-## 🛡️ Security Best Practices
-
-### 1. Always Get Permission
-
-- Written authorization before scanning any target
-- Follow scope defined in authorization
-- Respect rate limiting and DoS policies
-
-### 2. Use Responsibly
-
-```bash
-# Good: Single target, balanced profile
-python3 techfinger.py -u https://authorized-client.com
-
-# Bad: Mass scanning without authorization
-for i in {1..1000}; do
-    python3 techfinger.py -u "https://random-site-${i}.com" &
-done
+For full documentation: README.md
+For adding rules: CONTRIBUTING.md
 ```
-
-### 3. Protect Output Files
-
-```bash
-# Reports may contain sensitive info
-chmod 600 report.md
-chmod 700 evidence/
-```
-
-### 4. Clean Up After Scans
-
-```bash
-# Remove evidence if not needed
-rm -rf evidence/
-
-# Securely wipe if highly sensitive
-shred -vfz -n 3 report.md  # Kali has shred by default
-```
-
----
-
-## 🐛 Debugging
-
-### Verbose Output
-
-Currently TechFinger doesn't have a `--verbose` flag, but you can inspect the JSON output:
-
-```bash
-python3 techfinger.py -u https://target.com -o json | jq .
-```
-
-### Check Confidence Breakdown
-
-```bash
-python3 techfinger.py -u https://target.com --explain | grep -A 10 "Confidence Breakdown"
-```
-
-### Test Specific Features
-
-```bash
-# Test --explain flag
-python3 techfinger.py -u https://target.com --explain | head -50
-
-# Test --report flag
-python3 techfinger.py -u https://target.com --report && cat report.md
-
-# Test --evidence flag
-python3 techfinger.py -u https://target.com --evidence && ls -la evidence/
-```
-
----
-
-## 📚 Advanced Usage
-
-### Custom Request Headers
-
-Currently TechFinger doesn't support custom headers, but you can modify source:
-
-Edit `techfinger.py`, line ~150:
-```python
-headers={"User-Agent": f"TechFinger/{__version__}"},
-```
-
-Change to:
-```python
-headers={
-    "User-Agent": f"TechFinger/{__version__}",
-    "X-Custom-Header": "value",
-},
-```
-
-### Proxy Support
-
-TechFinger uses `requests` library, which respects HTTP(S) proxy environment variables:
-
-```bash
-# Via Burp Suite
-export HTTP_PROXY="http://127.0.0.1:8080"
-export HTTPS_PROXY="http://127.0.0.1:8080"
-python3 techfinger.py -u https://target.com
-
-# Via Fiddler
-export HTTPS_PROXY="http://127.0.0.1:8888"
-python3 techfinger.py -u https://target.com --profile fast
-```
-
-### Add Custom Detection Rules
-
-Edit `patterns.py` and add your rule:
-
-```python
-HEADER_PATTERNS: dict[str, dict[str, tuple[str, str]]] = {
-    "X-Custom-Header": {
-        r"MyTech[/\s]?([\d.]+)?": ("MyTech", "Framework"),
-    },
-}
-```
-
-Restart TechFinger, it will auto-load your new rule.
-
----
-
-## 📖 Next Steps
-
-1. **Read README.md** — full feature documentation
-2. **Review examples** — in README.md "Usage Examples" section
-3. **Contribute** — see CONTRIBUTING.md for adding detection rules
-4. **Report issues** — found a bug? GitHub Issues
-
----
-
-## 🆘 Support
-
-- 📖 **Documentation** — README.md, this file
-- 🐛 **Bug reports** — GitHub Issues
-- 💡 **Feature requests** — GitHub Issues with label `enhancement`
-- 💬 **Questions** — GitHub Discussions (coming soon)
-
----
-
-## 🎓 Learning Resources
-
-- **Fingerprinting Concepts** — [OWASP](https://owasp.org/)
-- **Python 3.11+ Features** — [Real Python](https://realpython.com/)
-- **Penetration Testing** — [HackTheBox](https://www.hackthebox.com/), [TryHackMe](https://tryhackme.com/)
-- **jq for JSON** — [jq Manual](https://stedolan.github.io/jq/)
-
----
-
-## 🎯 TechFinger on Kali — Checklist
-
-- [ ] Cloned from GitHub
-- [ ] `pip install -r requirements.txt` succeeded
-- [ ] `python3 techfinger.py --help` works
-- [ ] Scanned example.com successfully
-- [ ] Generated `--report` and `--evidence`
-- [ ] Compared two scans with `--compare`
-- [ ] Integrated with your pentest workflow
-
----
-
-**You're all set! Happy fingerprinting. 🔍🎯**
-
-For more: `python3 techfinger.py --help` or check [README.md](README.md)
