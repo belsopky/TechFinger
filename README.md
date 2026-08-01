@@ -1,5 +1,3 @@
-Here is the production-ready rewrite with every point of feedback applied.
-
 markdown
 # TechFinger
 
@@ -7,29 +5,6 @@ Passive web technology fingerprinting using evidence-driven heuristic analysis.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Supported Technologies](#supported-technologies)
-- [Installation](#installation)
-- [Supported Platforms](#supported-platforms)
-- [Usage](#usage)
-- [CLI Reference](#cli-reference)
-- [Examples](#examples)
-- [Architecture](#architecture)
-- [Detection Pipeline](#detection-pipeline)
-- [Exit Codes](#exit-codes)
-- [JSON Output](#json-output)
-- [Design Goals](#design-goals)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [FAQ](#faq)
-- [Author](#author)
-- [License](#license)
 
 ---
 
@@ -53,7 +28,7 @@ Detection is based on evidence collected from HTTP headers, cookies, HTML, JavaS
 | Session Patterns | `PHPSESSID`, `sessionid`, `connect.sid`, `laravel_session` |
 | Stack Correlation | CDN → Web Server → Language → Framework → Frontend |
 | Contradiction Detection | Flags conflicting evidence with penalty scoring |
-| Passive Security Observations | CSP, HSTS, cookie flags, version leaks |
+| Passive Security Checks | CSP, HSTS, cookie flags, version leaks |
 | Report Generation | Markdown reports and JSON export |
 | Embedded Detection Rules | All patterns in source code, no external database |
 
@@ -61,20 +36,13 @@ Detection is based on evidence collected from HTTP headers, cookies, HTML, JavaS
 
 ## Supported Technologies
 
-### Web Servers
-Apache, Nginx, IIS, Caddy
-
-### Languages / Runtimes
-PHP, Python, Node.js, Java, Ruby, ASP.NET
-
-### Frameworks
-Laravel, Django, Flask, Spring Boot, ASP.NET, Express.js, Ruby on Rails
-
-### Frontend
-React, Vue.js, Angular, Next.js, Nuxt, Svelte, jQuery, Bootstrap, Tailwind CSS
-
-### CDN / WAF
-Cloudflare, AWS CloudFront, Fastly, Sucuri
+| Category | Technologies |
+|----------|--------------|
+| Web Servers | Apache, Nginx, IIS, Caddy |
+| Languages / Runtimes | PHP, Python, Node.js, Java, Ruby, ASP.NET |
+| Frameworks | Laravel, Django, Flask, Express.js, Spring Boot, ASP.NET, Ruby on Rails |
+| Frontend | React, Vue.js, Angular, Next.js, Nuxt, Svelte, jQuery, Bootstrap, Tailwind CSS |
+| CDN / WAF | Cloudflare, AWS CloudFront, Fastly, Sucuri |
 
 ---
 
@@ -140,6 +108,14 @@ Options:
 
 ---
 
+## Output Formats
+
+- **Terminal** — Rich-formatted tables with confidence tiers and stack correlation
+- **JSON** — Structured output for scripting and CI/CD integration
+- **Markdown Report** — Client-ready report generated with `--report`
+
+---
+
 ## Examples
 
 ### Default Scan
@@ -165,19 +141,19 @@ python techfinger.py -u https://demo.local -o json > scan.json
 cat scan.json | jq '.technologies[] | select(.confidence >= 70)'
 ```
 
-### Detect Laravel Stack
+### Inspect a Laravel Application
 
 ```bash
 python techfinger.py -u https://target.example --explain
 ```
 
-### Detect React Frontend
+### Inspect a React Application
 
 ```bash
 python techfinger.py -u https://target.example --profile deep --max-js 10
 ```
 
-### Detect Cloudflare + Nginx
+### Inspect Cloudflare + Nginx
 
 ```bash
 python techfinger.py -u https://demo.local
@@ -247,16 +223,16 @@ python techfinger.py -u https://target.example --report
 HTTP Request
       │
       ▼
-Evidence Collection
+Evidence Extraction
       │
       ▼
-Evidence Normalization
+Evidence Aggregation
       │
       ▼
 Confidence Scoring
       │
       ▼
-Technology Correlation
+Stack Correlation
       │
       ▼
 Output Rendering
@@ -320,7 +296,7 @@ Output Rendering
 - Offline operation with no external signature database
 - Embedded detection rules for auditability
 - Evidence transparency for every finding
-- Simple two-file architecture
+- Simple modular architecture
 - JSON-friendly output for scripting and CI/CD integration
 
 ---
@@ -342,6 +318,8 @@ Output Rendering
 ---
 
 ## Contributing
+
+Please open an issue before submitting large changes.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/name`)
@@ -374,6 +352,12 @@ A: When version information is exposed in headers, cookies, or error pages. It d
 **Q: Is this a vulnerability scanner?**
 A: No. TechFinger performs passive analysis only. It does not exploit vulnerabilities or brute-force credentials.
 
+**Q: Does TechFinger make more than one request?**
+A: By default, one request. With `--profile deep` or `--max-js`, it may fetch additional external JavaScript files referenced in the HTML.
+
+**Q: Does TechFinger execute JavaScript?**
+A: No. It scans JavaScript source code for global variable patterns and framework signatures. It does not run a browser engine or execute code.
+
 ---
 
 ## Author
@@ -388,22 +372,3 @@ A: No. TechFinger performs passive analysis only. It does not exploit vulnerabil
 
 MIT License — see [LICENSE](LICENSE).
 ```
-
----
-
-### Final Pre-Push Checklist
-
-| Check | Action |
-|-------|--------|
-| Every CLI flag documented exists in code | Verify `techfinger.py --help` |
-| `--profile fast/balanced/deep` implemented | Verify |
-| `--explain`, `--report`, `--evidence`, `--no-color` implemented | Verify |
-| `-o json` implemented and matches schema | Verify |
-| Exit codes 0-4 implemented | Verify |
-| `patterns.py` contains all referenced constants | Verify |
-| `requirements.txt` exists | Verify |
-| All example domains use `.local`, `.test`, or `.example` | Verified |
-| No marketing language or unverified claims | Verified |
-| No "AI" terminology used | Verified |
-| `schema_version` field present in JSON output | Verify |
-| Supported Technologies list matches `patterns.py` | Verify |
