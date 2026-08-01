@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.json
+*.md.bak
+findings.json
+report.md
+evidence/
+.venv/
+.vscode/
+.idea/
