@@ -1,5 +1,5 @@
 
-# TechFinger — Quick Start
+# TechFinger Quick Start
 
 Get TechFinger running in under 5 minutes.
 
