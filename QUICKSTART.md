@@ -1,87 +1,86 @@
-# TechFinger — Quick Start (5 Minutes)
+```markdown
+# TechFinger — Quick Start
 
-Get TechFinger running on Kali Linux in 5 minutes.
+Get TechFinger running in under 5 minutes.
 
 ---
 
-## Step 1️⃣: Clone
+## Installation
 
 ```bash
-git clone https://github.com/HaQtor/TechFinger.git
+git clone https://github.com/belsopky/TechFinger.git
 cd TechFinger
-```
-
-## Step 2️⃣: Install
-
-```bash
 pip install -r requirements.txt
 ```
 
-Or with virtual environment:
+Or with a virtual environment:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Step 3️⃣: Run
+---
+
+## First Scan
 
 ```bash
 python3 techfinger.py -u https://example.com
 ```
 
-**That's it!** You should see:
+Expected output:
 
-```
-╔══════════════════════════════════════════════════════════╗
-║  TechFinger v0.1.0 — Heuristic Technology Fingerprinting ║
-╚══════════════════════════════════════════════════════════╝
+```text
+TechFinger v0.1.0
+Target: https://example.com | Status: 200 | Profile: balanced
 
-[Technologies detected...]
-[Stack correlation chain...]
-[Security observations...]
+High Confidence (>=70%)
++----------------+----------+---------+------+-----------+------------+
+| Technology     | Category | Version | Risk | Evidence  | Confidence |
++----------------+----------+---------+------+-----------+------------+
+| Nginx          | Web Srv  | 1.18.0  | Low  | 3 items   | 100%       |
+| PHP            | Runtime  | 8.1.2   | Med  | 2 items   | 92%        |
+| Laravel        | Frwk     | 10.x    | High | 4 items   | 95%        |
++----------------+----------+---------+------+-----------+------------+
+
+Likely Stack Chain
+Nginx (Web Server) — 100%
+    |
+    v
+PHP (Language) — 92%
+    |
+    v
+Laravel (Framework) — 95%
 ```
 
 ---
 
 ## Common Commands
 
-```bash
-# Fast scan (5s timeout)
-python3 techfinger.py -u https://target.com --profile fast
+| Command | Purpose |
+|---------|---------|
+| `python3 techfinger.py -u https://target.com --profile fast` | Quick reconnaissance (5s timeout) |
+| `python3 techfinger.py -u https://target.com --profile deep` | Thorough scan (30s, 10 JS files) |
+| `python3 techfinger.py -u https://target.com --explain` | Show confidence math breakdown |
+| `python3 techfinger.py -u https://target.com --report --evidence` | Generate report.md and evidence/ directory |
+| `python3 techfinger.py -u https://target.com -o json > scan.json` | JSON output for scripting |
 
-# Deep scan (30s, 10 JS files)
-python3 techfinger.py -u https://target.com --profile deep
+---
 
-# Show confidence math
-python3 techfinger.py -u https://target.com --explain
+## Output
 
-# Generate report + export evidence
-python3 techfinger.py -u https://target.com --report --evidence
+- Detected technologies with confidence percentages
+- Risk assessment (High / Medium / Low)
+- Security observations (CSP, HSTS, cookie flags)
+- Technology stack correlation chain
+- Investigation paths for manual follow-up
 
-# JSON output (for scripts)
-python3 techfinger.py -u https://target.com -o json > scan.json
+---
+
+## Next Steps
+
+- Full documentation: [README.md](README.md)
+- Kali Linux setup: [INSTALL_KALI.md](INSTALL_KALI.md)
+- Contributing guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
 ```
-
----
-
-## What You Get
-
-✅ Technology stack detected  
-✅ Confidence % for each tech  
-✅ Risk assessment (High/Med/Low)  
-✅ Security observations (CSP, HSTS, etc.)  
-✅ Stack correlation chain  
-✅ Investigation paths (next steps to test)  
-
----
-
-## Next
-
-- Full docs: [README.md](README.md)
-- Kali setup: [INSTALL_KALI.md](INSTALL_KALI.md)
-- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
-
-**Happy fingerprinting! 🔍**
