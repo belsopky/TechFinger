@@ -341,21 +341,32 @@ Edit `patterns.py`:
 ## FAQ
 
 **Q: Does TechFinger require an internet connection?**
+
 A: Only to fetch the target. All detection rules are embedded in source code.
 
+
 **Q: Can I use this in CI/CD pipelines?**
+
 A: Yes. Use `-o json` for structured output.
 
+
 **Q: Does it detect versions accurately?**
+
 A: When version information is exposed in headers, cookies, or error pages. It does not perform active exploitation to determine versions.
 
+
 **Q: Is this a vulnerability scanner?**
+
 A: No. TechFinger performs passive analysis only. It does not exploit vulnerabilities or brute-force credentials.
 
+
 **Q: Does TechFinger make more than one request?**
+
 A: By default, one request. With `--profile deep` or `--max-js`, it may fetch additional external JavaScript files referenced in the HTML.
 
+
 **Q: Does TechFinger execute JavaScript?**
+
 A: No. It scans JavaScript source code for global variable patterns and framework signatures. It does not run a browser engine or execute code.
 
 ---
