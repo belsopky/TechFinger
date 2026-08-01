@@ -1,6 +1,6 @@
 Here is the production-ready rewrite with every point of feedback applied.
 
-```markdown
+markdown
 # TechFinger
 
 Passive web technology fingerprinting using evidence-driven heuristic analysis.
