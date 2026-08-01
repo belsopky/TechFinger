@@ -1,4 +1,4 @@
-markdown
+
 # TechFinger
 
 Passive web technology fingerprinting using evidence-driven heuristic analysis.
@@ -362,9 +362,13 @@ A: No. It scans JavaScript source code for global variable patterns and framewor
 
 ## Author
 
-**Bassam Elsopky**
+**Bassam Elsopky (HaQtor)**
 
-- GitHub: [https://github.com/belsopky](https://github.com/belsopky)
+- Junior Penetration Tester
+- Bug Bounty Hunter
+- [GitHub](https://github.com/belsopky)
+- [LinkedIn](https://www.linkedin.com/in/bassam-elsopky-814ba1331/)
+- [Docker Hub](https://hub.docker.com/r/haqtor)
 
 ---
 
