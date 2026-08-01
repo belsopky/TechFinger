@@ -1,5 +1,5 @@
 markdown
-TechFinger Installation Guide — Kali Linux
+TechFinger Installation Guide Kali Linux
 ==========================================
 
 Prerequisites
